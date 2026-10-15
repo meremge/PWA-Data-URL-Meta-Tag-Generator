@@ -1,9 +1,13 @@
+<!-- Chosen Palette: Slate & Indigo Neutrals -->
+<!-- Application Structure Plan: ユーザーが直感的に設定できる入力フォーム（左側）と、リアルタイムでアイコン表示・コード生成結果を確認できるプレビュー/出力エリア（右側）の2カラム構成を採用しています。複雑なPWA設定を自動で1つのHTML/Data URLに変換し、コピー操作までスムーズに行える導線に設計しています。 -->
+<!-- Visualization & Content Choices: Canvasを用いた512x512のリアルタイムアイコンレンダリング、Tailwind CSSによるレスポンシブな暗色テーマUI、クリップボードコピー用トースト通知を採用しています。SVGグラフィックやMermaid JSは使用していません。 -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PWA Data URL & Meta Tag Generator v3.0 (Stable Base64)</title>
+    <title>PWA Data URL & Meta Tag Generator v3.0</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -65,9 +69,9 @@
                 <div>
                     <h1 class="font-bold text-xl sm:text-2xl tracking-tight text-white flex items-center gap-2">
                         PWA Data URL Generator
-                        <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">v3.0 Stable Base64</span>
+                        <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">v3.0 Stable</span>
                     </h1>
-                    <p class="text-xs text-slate-400">リアルタイムOSマスクプレビュー ＆ 安定版静的Base64出力エンジン</p>
+                    <p class="text-xs text-slate-400">1ファイル完結型 PWA 生成 & 静的 Base64 埋め込みツール</p>
                 </div>
             </div>
             
@@ -96,7 +100,7 @@
                     <h2 class="font-semibold text-lg text-white flex items-center gap-2">
                         <i class="fa-solid fa-sliders text-brand-500"></i> PWA & アプリ設定
                     </h2>
-                    <span class="text-xs text-slate-400">設定とリアルタイム連動</span>
+                    <span class="text-xs text-slate-400">リアルタイム同期</span>
                 </div>
 
                 <!-- Basic Meta Info -->
@@ -116,10 +120,10 @@
                         </div>
 
                         <div>
-                            <label for="bgColor" class="block text-xs font-medium text-slate-300 mb-1">背景色 (Background)</label>
+                            <label for="bgColor" class="block text-xs font-medium text-slate-300 mb-1">アイコン背景色</label>
                             <div class="flex items-center gap-2">
-                                <input type="color" id="bgColor" value="#0f172a" class="h-9 w-10 bg-transparent cursor-pointer rounded border border-dark-border">
-                                <input type="text" id="bgColorHex" value="#0f172a" class="w-full bg-dark-input border border-dark-border rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-brand-500 uppercase">
+                                <input type="color" id="bgColor" value="#6366f1" class="h-9 w-10 bg-transparent cursor-pointer rounded border border-dark-border">
+                                <input type="text" id="bgColorHex" value="#6366f1" class="w-full bg-dark-input border border-dark-border rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-brand-500 uppercase">
                             </div>
                         </div>
                     </div>
@@ -218,7 +222,7 @@
                                 <i class="fa-solid fa-square"></i> 四角 (Square)
                             </button>
                         </div>
-                        <p class="text-[11px] text-slate-500 pt-1">※Android/iOSなど端末ごとの切り抜き後の見え方をシミュレートします。</p>
+                        <p class="text-[11px] text-slate-500 pt-1">※Android/iOS端末等における切り抜き見え方をシミュレートできます。</p>
                     </div>
                 </div>
             </div>
@@ -276,7 +280,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-dark-border py-4 text-center text-xs text-slate-500">
-        <p>© 2026 PWA Factory v3.0 - Stable Base64 Embedded Generator</p>
+        <p>© 2026 PWA Factory v3.0 - Clean Single File Web Tool</p>
     </footer>
 
     <!-- Application Script -->
@@ -286,9 +290,9 @@
         let isImageTransparent = false;
 
         const presets = {
-            todo: { title: "マイTODOアプリ", themeColor: "#6366f1", bgColor: "#0f172a", display: "standalone", orientation: "portrait", emoji: "⚡" },
-            memo: { title: "マイメモパッド", themeColor: "#f59e0b", bgColor: "#1c1917", display: "standalone", orientation: "portrait", emoji: "📝" },
-            tool: { title: "マイ便利ツール", themeColor: "#10b981", bgColor: "#064e3b", display: "standalone", orientation: "portrait", emoji: "🛠️" }
+            todo: { title: "マイTODOアプリ", themeColor: "#6366f1", bgColor: "#6366f1", display: "standalone", orientation: "portrait", emoji: "⚡" },
+            memo: { title: "マイメモパッド", themeColor: "#f59e0b", bgColor: "#f59e0b", display: "standalone", orientation: "portrait", emoji: "📝" },
+            tool: { title: "マイ便利ツール", themeColor: "#10b981", bgColor: "#10b981", display: "standalone", orientation: "portrait", emoji: "🛠️" }
         };
 
         const appTitleEl = document.getElementById('appTitle');
@@ -365,6 +369,7 @@
         function setupEventListeners() {
             themeColorEl.addEventListener('input', (e) => { themeColorHexEl.value = e.target.value; generateAll(); });
             themeColorHexEl.addEventListener('input', (e) => { themeColorEl.value = e.target.value; generateAll(); });
+            
             bgColorEl.addEventListener('input', (e) => { bgColorHexEl.value = e.target.value; generateAll(); });
             bgColorHexEl.addEventListener('input', (e) => { bgColorEl.value = e.target.value; generateAll(); });
 
@@ -410,9 +415,9 @@
             }
 
             if (isImageTransparent) {
-                transparentStatusEl.innerHTML = `<span class="text-emerald-400"><i class="fa-solid fa-circle-check"></i> 透過領域を検出：テーマカラー背景と自動合成します</span>`;
+                transparentStatusEl.innerHTML = `<span class="text-emerald-400"><i class="fa-solid fa-circle-check"></i> 透過領域を検出：背景色と自動合成します</span>`;
             } else {
-                transparentStatusEl.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-image"></i> 通常画像を検出：背景処理を行わず画像を最適表示します</span>`;
+                transparentStatusEl.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-image"></i> 通常画像を検出：背景処理を行わず最適表示します</span>`;
             }
         }
 
@@ -433,11 +438,11 @@
         }
 
         async function generatePngDataUrl() {
-            const themeColor = themeColorHexEl.value || "#6366f1";
+            const iconBgColor = bgColorHexEl.value || "#6366f1";
             ctx.clearRect(0, 0, 512, 512);
 
             if (currentIconMode === 'emoji') {
-                ctx.fillStyle = themeColor;
+                ctx.fillStyle = iconBgColor;
                 ctx.fillRect(0, 0, 512, 512);
 
                 const emoji = iconEmojiEl.value.trim() || "⚡";
@@ -447,7 +452,7 @@
                 ctx.fillText(emoji, 256, 276);
             } else {
                 if (!uploadedImageObj) {
-                    ctx.fillStyle = themeColor;
+                    ctx.fillStyle = iconBgColor;
                     ctx.fillRect(0, 0, 512, 512);
                     ctx.font = "280px sans-serif";
                     ctx.textAlign = "center";
@@ -455,7 +460,7 @@
                     ctx.fillText("⚡", 256, 276);
                 } else {
                     if (isImageTransparent) {
-                        ctx.fillStyle = themeColor;
+                        ctx.fillStyle = iconBgColor;
                         ctx.fillRect(0, 0, 512, 512);
                         const size = 384;
                         const offset = (512 - size) / 2;
@@ -471,7 +476,7 @@
         async function generateAll() {
             const title = appTitleEl.value || "マイアプリ";
             const themeColor = themeColorHexEl.value || "#6366f1";
-            const bgColor = bgColorHexEl.value || "#0f172a";
+            const iconBgColor = bgColorHexEl.value || "#6366f1";
             const display = displayModeEl.value;
             const orientation = orientationEl.value;
 
@@ -485,7 +490,7 @@
                 short_name: title.length > 10 ? title.substring(0, 10) + "..." : title,
                 start_url: ".",
                 display: display,
-                background_color: bgColor,
+                background_color: iconBgColor,
                 theme_color: themeColor,
                 orientation: orientation,
                 icons: [
@@ -510,7 +515,6 @@
 <meta name="apple-mobile-web-app-title" content="${title}">
 <link rel="icon" href="${iconPngDataUrl}">
 <link rel="apple-touch-icon" href="${iconPngDataUrl}">
-<!-- Inline Manifest Data URL -->
 <link rel="manifest" href="${manifestDataUrl}">`;
 
             const fullHtml = `<!DOCTYPE html>
@@ -522,7 +526,7 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
     <script src="https://cdn.tailwindcss.com"><\/script>
     <style>
         body {
-            background-color: ${bgColor};
+            background-color: ${iconBgColor};
             color: #ffffff;
             font-family: system-ui, -apple-system, sans-serif;
         }
@@ -534,7 +538,7 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
             <img src="${iconPngDataUrl}" alt="App Icon" class="w-20 h-20 rounded-2xl shadow-lg border border-slate-600">
         </div>
         <h1 class="text-2xl font-bold text-white">${title}</h1>
-        <p class="text-xs text-slate-400">安定版静的Base64 PWAアプリケーションが稼働中！</p>
+        <p class="text-xs text-slate-400">安定版 PWA アプリケーション稼働中！</p>
         <div class="pt-4 border-t border-slate-700">
             <button onclick="alert('PWA動作中！')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-lg active:scale-95">
                 アクションを実行
