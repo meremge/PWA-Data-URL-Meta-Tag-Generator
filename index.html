@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PWA Data URL & Meta Tag Generator v3.0</title>
+    <title>PWA Data URL & Meta Tag Generator v3.0 (Stable Base64)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -43,7 +43,6 @@
         code, textarea, input.font-mono {
             font-family: 'JetBrains Mono', monospace;
         }
-        /* OS Mask Simulation Styles */
         .preview-mask-circle { border-radius: 50%; }
         .preview-mask-rounded { border-radius: 22.5%; }
         .preview-mask-square { border-radius: 0%; }
@@ -66,9 +65,9 @@
                 <div>
                     <h1 class="font-bold text-xl sm:text-2xl tracking-tight text-white flex items-center gap-2">
                         PWA Data URL Generator
-                        <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">v3.0 Ultra Preview</span>
+                        <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">v3.0 Stable Base64</span>
                     </h1>
-                    <p class="text-xs text-slate-400">リアルタイムOSマスクプレビュー＆スマート背景自動判定エンジン</p>
+                    <p class="text-xs text-slate-400">リアルタイムOSマスクプレビュー ＆ 安定版静的Base64出力エンジン</p>
                 </div>
             </div>
             
@@ -277,7 +276,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-dark-border py-4 text-center text-xs text-slate-500">
-        <p>© 2026 PWA Factory v3.0 - Single-File Dynamic Canvas Engine</p>
+        <p>© 2026 PWA Factory v3.0 - Stable Base64 Embedded Generator</p>
     </footer>
 
     <!-- Application Script -->
@@ -535,7 +534,7 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
             <img src="${iconPngDataUrl}" alt="App Icon" class="w-20 h-20 rounded-2xl shadow-lg border border-slate-600">
         </div>
         <h1 class="text-2xl font-bold text-white">${title}</h1>
-        <p class="text-xs text-slate-400">1ファイル PNG-PWA アプリケーションが稼働中！</p>
+        <p class="text-xs text-slate-400">安定版静的Base64 PWAアプリケーションが稼働中！</p>
         <div class="pt-4 border-t border-slate-700">
             <button onclick="alert('PWA動作中！')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-lg active:scale-95">
                 アクションを実行
