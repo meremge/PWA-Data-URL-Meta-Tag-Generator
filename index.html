@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Data URL & Meta Tag Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        dark: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            border: '#334155',
+                            input: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        code, textarea, input.font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Header Section -->
+    <header class="border-b border-dark-border bg-dark-card/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-brand-600 rounded-xl shadow-lg shadow-brand-500/20 text-white">
+                    <i class="fa-solid fa-bolt text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl sm:text-2xl tracking-tight text-white flex items-center gap-2">
+                        PWA Data URL Generator
+                        <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">v1.0</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">1ファイルPWA量産用・Data URL ＆ メタタグ一括自動生成ツール</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button onclick="loadPreset('todo')" class="text-xs font-semibold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-list-check text-brand-500"></i> TODOアプリ用プリセット
+                </button>
+                <button onclick="loadPreset('minimal')" class="text-xs font-semibold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg transition-all flex items-center gap-1.5">
+                    <i class="fa-solid fa-code text-emerald-400"></i> ミニマル
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Input Form & Config -->
+        <section class="lg:col-span-5 space-y-6">
+            <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-5">
+                <div class="flex items-center justify-between border-b border-dark-border pb-3">
+                    <h2 class="font-semibold text-lg text-white flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-brand-500"></i> PWA & アプリ設定
+                    </h2>
+                    <span class="text-xs text-slate-400">リアルタイム自動生成</span>
+                </div>
+
+                <!-- Basic Meta Info -->
+                <div class="space-y-4">
+                    <div>
+                        <label for="appTitle" class="block text-xs font-medium text-slate-300 mb-1">アプリ名 (App Title)</label>
+                        <input type="text" id="appTitle" value="マイTODOスタンド" class="w-full bg-dark-input border border-dark-border rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500 transition-colors">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="themeColor" class="block text-xs font-medium text-slate-300 mb-1">テーマカラー</label>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="themeColor" value="#6366f1" class="h-9 w-10 bg-transparent cursor-pointer rounded border border-dark-border">
+                                <input type="text" id="themeColorHex" value="#6366f1" class="w-full bg-dark-input border border-dark-border rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-brand-500 uppercase">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="bgColor" class="block text-xs font-medium text-slate-300 mb-1">背景色 (Background)</label>
+                            <div class="flex items-center gap-2">
+                                <input type="color" id="bgColor" value="#0f172a" class="h-9 w-10 bg-transparent cursor-pointer rounded border border-dark-border">
+                                <input type="text" id="bgColorHex" value="#0f172a" class="w-full bg-dark-input border border-dark-border rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-brand-500 uppercase">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="displayMode" class="block text-xs font-medium text-slate-300 mb-1">表示モード (Display)</label>
+                            <select id="displayMode" class="w-full bg-dark-input border border-dark-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                                <option value="standalone" selected>standalone (アプリ風)</option>
+                                <option value="fullscreen">fullscreen (全画面)</option>
+                                <option value="minimal-ui">minimal-ui</option>
+                                <option value="browser">browser</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="orientation" class="block text-xs font-medium text-slate-300 mb-1">画面向き (Orientation)</label>
+                            <select id="orientation" class="w-full bg-dark-input border border-dark-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                                <option value="portrait" selected>portrait (縦固定)</option>
+                                <option value="any">any (自動回転)</option>
+                                <option value="landscape">landscape (横固定)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="iconSvg" class="block text-xs font-medium text-slate-300 mb-1">アイコン (Emoji or SVG)</label>
+                        <input type="text" id="iconSvg" value="⚡" placeholder="絵文字(⚡)またはSVGコード" class="w-full bg-dark-input border border-dark-border rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500 font-mono">
+                    </div>
+                </div>
+
+                <!-- Custom Manifest JSON Editor -->
+                <div class="pt-2">
+                    <div class="flex items-center justify-between mb-1">
+                        <label for="jsonInput" class="block text-xs font-medium text-slate-300">manifest.json (拡張・詳細設定)</label>
+                        <button onclick="formatJson()" class="text-[10px] text-brand-500 hover:text-brand-400 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> 成形
+                        </button>
+                    </div>
+                    <textarea id="jsonInput" rows="6" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-emerald-400 focus:outline-none focus:border-brand-500 transition-colors leading-relaxed"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Column: Generated Code & Outputs -->
+        <section class="lg:col-span-7 space-y-6">
+            
+            <!-- Output 1: Meta Tags block -->
+            <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+                        <i class="fa-solid fa-tags text-brand-500"></i> PWA Header Meta & Manifest Tags
+                    </h3>
+                    <button onclick="copyToClipboard('outMetaTags', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 active:scale-95">
+                        <i class="fa-regular fa-copy"></i> <span>コピー</span>
+                    </button>
+                </div>
+                <div class="relative">
+                    <textarea id="outMetaTags" readonly rows="5" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none resize-none leading-relaxed"></textarea>
+                </div>
+            </div>
+
+            <!-- Output 2: Manifest Data URL only -->
+            <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+                        <i class="fa-solid fa-link text-emerald-400"></i> Manifest Data URL (単体)
+                    </h3>
+                    <button onclick="copyToClipboard('outManifestDataUrl', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 active:scale-95">
+                        <i class="fa-regular fa-copy"></i> <span>コピー</span>
+                    </button>
+                </div>
+                <input type="text" idoutManifestDataUrl id="outManifestDataUrl" readonly class="w-full bg-dark-input border border-dark-border rounded-xl px-3.5 py-2.5 text-xs font-mono text-emerald-400 focus:outline-none">
+            </div>
+
+            <!-- Output 3: Full Template HTML -->
+            <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+                        <i class="fa-solid fa-file-code text-cyan-400"></i> 完成1ファイル PWA テンプレート (HTML)
+                    </h3>
+                    <div class="flex items-center gap-2">
+                        <button onclick="copyToClipboard('outFullHtml', this)" class="text-xs bg-brand-600 hover:bg-brand-500 text-white font-medium px-3.5 py-1.5 rounded-lg shadow-lg shadow-brand-500/20 transition-all flex items-center gap-1.5 active:scale-95">
+                            <i class="fa-regular fa-copy"></i> <span>全コードコピー</span>
+                        </button>
+                    </div>
+                </div>
+                <textarea id="outFullHtml" readonly rows="12" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-cyan-200 focus:outline-none resize-none leading-relaxed"></textarea>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-brand-600 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none flex items-center gap-2 z-50">
+        <i class="fa-solid fa-circle-check text-base"></i>
+        <span id="toastMsg">クリップボードにコピーしました！</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-dark-border py-4 text-center text-xs text-slate-500">
+        <p>© 2026 秘密のスペック - High-Speed Single-File PWA Architecture</p>
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // Preset Data Definition
+        const presets = {
+            todo: {
+                title: "マイTODOスタンド",
+                themeColor: "#6366f1",
+                bgColor: "#0f172a",
+                display: "standalone",
+                orientation: "portrait",
+                icon: "⚡",
+                manifestObj: {
+                    name: "マイTODOスタンド",
+                    short_name: "TODO",
+                    start_url: ".",
+                    display: "standalone",
+                    background_color: "#0f172a",
+                    theme_color: "#6366f1",
+                    orientation: "portrait",
+                    icons: [
+                        {
+                            src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>",
+                            sizes: "512x512",
+                            type: "image/svg+xml",
+                            purpose: "any maskable"
+                        }
+                    ]
+                }
+            },
+            minimal: {
+                title: "ミニマルPWA",
+                themeColor: "#10b981",
+                bgColor: "#000000",
+                display: "standalone",
+                orientation: "any",
+                icon: "🚀",
+                manifestObj: {
+                    name: "ミニマルPWA",
+                    short_name: "App",
+                    start_url: ".",
+                    display: "standalone",
+                    background_color: "#000000",
+                    theme_color: "#10b981",
+                    icons: []
+                }
+            }
+        };
+
+        // DOM elements
+        const appTitleEl = document.getElementById('appTitle');
+        const themeColorEl = document.getElementById('themeColor');
+        const themeColorHexEl = document.getElementById('themeColorHex');
+        const bgColorEl = document.getElementById('bgColor');
+        const bgColorHexEl = document.getElementById('bgColorHex');
+        const displayModeEl = document.getElementById('displayMode');
+        const orientationEl = document.getElementById('orientation');
+        const iconSvgEl = document.getElementById('iconSvg');
+        const jsonInputEl = document.getElementById('jsonInput');
+
+        const outMetaTagsEl = document.getElementById('outMetaTags');
+        const outManifestDataUrlEl = document.getElementById('outManifestDataUrl');
+        const outFullHtmlEl = document.getElementById('outFullHtml');
+
+        // Initial setup
+        window.addEventListener('DOMContentLoaded', () => {
+            loadPreset('todo');
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Color picker sync
+            themeColorEl.addEventListener('input', (e) => {
+                themeColorHexEl.value = e.target.value;
+                updateManifestFromJsonInputs();
+                generateAll();
+            });
+            themeColorHexEl.addEventListener('input', (e) => {
+                themeColorEl.value = e.target.value;
+                updateManifestFromJsonInputs();
+                generateAll();
+            });
+
+            bgColorEl.addEventListener('input', (e) => {
+                bgColorHexEl.value = e.target.value;
+                updateManifestFromJsonInputs();
+                generateAll();
+            });
+            bgColorHexEl.addEventListener('input', (e) => {
+                bgColorEl.value = e.target.value;
+                updateManifestFromJsonInputs();
+                generateAll();
+            });
+
+            // Input change triggers
+            [appTitleEl, displayModeEl, orientationEl, iconSvgEl].forEach(el => {
+                el.addEventListener('input', () => {
+                    updateManifestFromJsonInputs();
+                    generateAll();
+                });
+            });
+
+            jsonInputEl.addEventListener('input', generateAll);
+        }
+
+        // Load predefined setups
+        function loadPreset(key) {
+            const data = presets[key];
+            if (!data) return;
+
+            appTitleEl.value = data.title;
+            themeColorEl.value = data.themeColor;
+            themeColorHexEl.value = data.themeColor;
+            bgColorEl.value = data.bgColor;
+            bgColorHexEl.value = data.bgColor;
+            displayModeEl.value = data.display;
+            orientationEl.value = data.orientation;
+            iconSvgEl.value = data.icon;
+
+            jsonInputEl.value = JSON.stringify(data.manifestObj, null, 2);
+            generateAll();
+        }
+
+        // Keep JSON editor in sync with simple controls
+        function updateManifestFromJsonInputs() {
+            try {
+                let currentJson = JSON.parse(jsonInputEl.value);
+                currentJson.name = appTitleEl.value;
+                currentJson.short_name = appTitleEl.value;
+                currentJson.theme_color = themeColorHexEl.value;
+                currentJson.background_color = bgColorHexEl.value;
+                currentJson.display = displayModeEl.value;
+                currentJson.orientation = orientationEl.value;
+
+                // Update SVG or Emoji Icon Data URL in Manifest
+                const iconVal = iconSvgEl.value.trim();
+                let iconDataUrl = "";
+                if (iconVal.startsWith("<svg")) {
+                    iconDataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(iconVal)}`;
+                } else if (iconVal) {
+                    // Emoji fallback icon
+                    const svgWrapper = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>${iconVal}</text></svg>`;
+                    iconDataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svgWrapper)}`;
+                }
+
+                if (iconDataUrl) {
+                    currentJson.icons = [
+                        {
+                            src: iconDataUrl,
+                            sizes: "512x512",
+                            type: "image/svg+xml",
+                            purpose: "any maskable"
+                        }
+                    ];
+                }
+
+                jsonInputEl.value = JSON.stringify(currentJson, null, 2);
+            } catch (err) {
+                // Ignore parse errors while typing
+            }
+        }
+
+        // Formatting Helper
+        function formatJson() {
+            try {
+                const parsed = JSON.parse(jsonInputEl.value);
+                jsonInputEl.value = JSON.stringify(parsed, null, 2);
+                showToast("JSONを整形しました！");
+            } catch (e) {
+                showToast("無効なJSONフォーマットです");
+            }
+        }
+
+        // Core Generation Logic
+        function generateAll() {
+            const title = appTitleEl.value || "My PWA App";
+            const themeColor = themeColorHexEl.value || "#6366f1";
+            const bgColor = bgColorHexEl.value || "#0f172a";
+            let rawJson = jsonInputEl.value.trim();
+
+            // Validate JSON
+            let cleanJson = "";
+            try {
+                const parsed = JSON.parse(rawJson);
+                cleanJson = JSON.stringify(parsed);
+            } catch (e) {
+                cleanJson = JSON.stringify({ name: title, theme_color: themeColor });
+            }
+
+            // Encode Manifest JSON to Data URL using encodeURIComponent
+            const manifestDataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(cleanJson)}`;
+
+            // Icon helper tag
+            const iconVal = iconSvgEl.value.trim();
+            let iconTag = '';
+            if (iconVal.startsWith("<svg")) {
+                iconTag = `<link rel="icon" href="data:image/svg+xml;utf8,${encodeURIComponent(iconVal)}">`;
+            } else if (iconVal) {
+                const svgEmoji = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>${iconVal}</text></svg>`;
+                iconTag = `<link rel="icon" href="data:image/svg+xml;utf8,${encodeURIComponent(svgEmoji)}">`;
+            }
+
+            // Meta tags set
+            const metaTags = `<!-- PWA Essential Meta Tags -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="${themeColor}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="${title}">
+${iconTag}
+<!-- Inline Manifest Data URL -->
+<link rel="manifest" href="${manifestDataUrl}">`;
+
+            // Complete template HTML
+            const fullHtml = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>${title}</title>
+${metaTags.split('\n').map(line => '    ' + line).join('\n')}
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <style>
+        body {
+            background-color: ${bgColor};
+            color: #ffffff;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-center items-center p-4">
+    <div class="text-center space-y-4 max-w-md w-full bg-slate-800/80 border border-slate-700 p-6 rounded-2xl shadow-2xl backdrop-blur">
+        <div class="text-5xl mb-2">${iconVal.startsWith("<svg") ? "⚡" : iconVal}</div>
+        <h1 class="text-2xl font-bold text-white">${title}</h1>
+        <p class="text-xs text-slate-400">1ファイルData-URL PWAアプリケーションが稼働中！</p>
+        <div class="pt-4 border-t border-slate-700">
+            <button onclick="alert('PWA動作中！')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-lg active:scale-95">
+                アクションを実行
+            </button>
+        </div>
+    </div>
+</body>
+</html>`;
+
+            // Display in textareas
+            outMetaTagsEl.value = metaTags;
+            outManifestDataUrlEl.value = manifestDataUrl;
+            outFullHtmlEl.value = fullHtml;
+        }
+
+        // Copy mechanism
+        function copyToClipboard(elementId, btn) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+
+            // Use standard selection copy fallback for iframe safety
+            el.select();
+            el.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                showToast("クリップボードにコピーしました！");
+                
+                // Feedback animation
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span>完了!</span>`;
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 1500);
+            } catch (err) {
+                showToast("コピーに失敗しました");
+            }
+        }
+
+        // UI Toast Message
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = msg;
+            
+            toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
