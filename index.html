@@ -4,15 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PWA Data URL & Meta Tag Generator</title>
-    <!-- PWA Essential Meta Tags -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#6366f1">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="PWA Data URL Generator">
-<link rel="icon" href="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%20100%20100'%3E%3Ctext%20y%3D'.9em'%20font-size%3D'90'%3E%E2%9D%96%3C%2Ftext%3E%3C%2Fsvg%3E">
-<!-- Inline Manifest Data URL -->
-<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22PWA%20Data%20URL%20Generator%22%2C%22short_name%22%3A%22PWA%20Data%20URL%20Generator%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%236366f1%22%2C%22orientation%22%3A%22portrait%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%3Butf8%2C%253Csvg%2520xmlns%253D'http%253A%252F%252Fwww.w3.org%252F2000%252Fsvg'%2520viewBox%253D'0%25200%2520100%2520100'%253E%253Ctext%2520y%253D'.9em'%2520font-size%253D'90'%253E%25E2%259D%2596%253C%252Ftext%253E%253C%252Fsvg%253E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -82,7 +73,7 @@
                 <div>
                     <h1 class="font-bold text-xl sm:text-2xl tracking-tight text-white flex items-center gap-2">
                         PWA Data URL Generator
-                        <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">v1.0</span>
+                        <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">v1.1</span>
                     </h1>
                     <p class="text-xs text-slate-400">1ファイルPWA量産用・Data URL ＆ メタタグ一括自動生成ツール</p>
                 </div>
@@ -90,10 +81,10 @@
             
             <div class="flex items-center gap-2">
                 <button onclick="loadPreset('todo')" class="text-xs font-semibold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg transition-all flex items-center gap-1.5">
-                    <i class="fa-solid fa-list-check text-brand-500"></i> アプリ用プリセット
+                    <i class="fa-solid fa-list-check text-brand-500"></i> TODOアプリ用プリセット
                 </button>
                 <button onclick="loadPreset('minimal')" class="text-xs font-semibold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg transition-all flex items-center gap-1.5">
-                    <i class="fa-solid fa-code text-emerald-400"></i> ミニマルアプリ
+                    <i class="fa-solid fa-code text-emerald-400"></i> ミニマル
                 </button>
             </div>
         </div>
@@ -116,7 +107,7 @@
                 <div class="space-y-4">
                     <div>
                         <label for="appTitle" class="block text-xs font-medium text-slate-300 mb-1">アプリ名 (App Title)</label>
-                        <input type="text" id="appTitle" value="マイアプリ" class="w-full bg-dark-input border border-dark-border rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500 transition-colors">
+                        <input type="text" id="appTitle" value="マイTODOスタンド" class="w-full bg-dark-input border border-dark-border rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500 transition-colors">
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
@@ -204,7 +195,7 @@
                         <i class="fa-regular fa-copy"></i> <span>コピー</span>
                     </button>
                 </div>
-                <input type="text" idoutManifestDataUrl id="outManifestDataUrl" readonly class="w-full bg-dark-input border border-dark-border rounded-xl px-3.5 py-2.5 text-xs font-mono text-emerald-400 focus:outline-none">
+                <input type="text" id="outManifestDataUrl" readonly class="w-full bg-dark-input border border-dark-border rounded-xl px-3.5 py-2.5 text-xs font-mono text-emerald-400 focus:outline-none">
             </div>
 
             <!-- Output 3: Full Template HTML -->
@@ -233,7 +224,7 @@
 
     <!-- Footer -->
     <footer class="border-t border-dark-border py-4 text-center text-xs text-slate-500">
-        <p>© 2026 秘密のスペック - High-Speed Single-File PWA Architecture</p>
+        <p>© 2026 秘密のスペック - High-Speed Single-File PWA Architecture (v1.1 Safe-Encoding)</p>
     </footer>
 
     <!-- Application Script -->
@@ -241,7 +232,7 @@
         // Preset Data Definition
         const presets = {
             todo: {
-                title: "マイアプリ",
+                title: "マイTODOスタンド",
                 themeColor: "#6366f1",
                 bgColor: "#0f172a",
                 display: "standalone",
@@ -257,7 +248,7 @@
                     orientation: "portrait",
                     icons: [
                         {
-                            src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>",
+                            src: "data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><text y=\".9em\" font-size=\"90\">⚡</text></svg>",
                             sizes: "512x512",
                             type: "image/svg+xml",
                             purpose: "any maskable"
@@ -306,7 +297,6 @@
         });
 
         function setupEventListeners() {
-            // Color picker sync
             themeColorEl.addEventListener('input', (e) => {
                 themeColorHexEl.value = e.target.value;
                 updateManifestFromJsonInputs();
@@ -329,7 +319,6 @@
                 generateAll();
             });
 
-            // Input change triggers
             [appTitleEl, displayModeEl, orientationEl, iconSvgEl].forEach(el => {
                 el.addEventListener('input', () => {
                     updateManifestFromJsonInputs();
@@ -340,7 +329,6 @@
             jsonInputEl.addEventListener('input', generateAll);
         }
 
-        // Load predefined setups
         function loadPreset(key) {
             const data = presets[key];
             if (!data) return;
@@ -358,7 +346,6 @@
             generateAll();
         }
 
-        // Keep JSON editor in sync with simple controls
         function updateManifestFromJsonInputs() {
             try {
                 let currentJson = JSON.parse(jsonInputEl.value);
@@ -369,14 +356,12 @@
                 currentJson.display = displayModeEl.value;
                 currentJson.orientation = orientationEl.value;
 
-                // Update SVG or Emoji Icon Data URL in Manifest
                 const iconVal = iconSvgEl.value.trim();
                 let iconDataUrl = "";
                 if (iconVal.startsWith("<svg")) {
                     iconDataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(iconVal)}`;
                 } else if (iconVal) {
-                    // Emoji fallback icon
-                    const svgWrapper = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>${iconVal}</text></svg>`;
+                    const svgWrapper = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${iconVal}</text></svg>`;
                     iconDataUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svgWrapper)}`;
                 }
 
@@ -392,12 +377,9 @@
                 }
 
                 jsonInputEl.value = JSON.stringify(currentJson, null, 2);
-            } catch (err) {
-                // Ignore parse errors while typing
-            }
+            } catch (err) {}
         }
 
-        // Formatting Helper
         function formatJson() {
             try {
                 const parsed = JSON.parse(jsonInputEl.value);
@@ -408,14 +390,13 @@
             }
         }
 
-        // Core Generation Logic
+        // Core Generation Logic (Safe Encoding)
         function generateAll() {
             const title = appTitleEl.value || "My PWA App";
             const themeColor = themeColorHexEl.value || "#6366f1";
             const bgColor = bgColorHexEl.value || "#0f172a";
             let rawJson = jsonInputEl.value.trim();
 
-            // Validate JSON
             let cleanJson = "";
             try {
                 const parsed = JSON.parse(rawJson);
@@ -424,20 +405,17 @@
                 cleanJson = JSON.stringify({ name: title, theme_color: themeColor });
             }
 
-            // Encode Manifest JSON to Data URL using encodeURIComponent
             const manifestDataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(cleanJson)}`;
 
-            // Icon helper tag
             const iconVal = iconSvgEl.value.trim();
             let iconTag = '';
             if (iconVal.startsWith("<svg")) {
                 iconTag = `<link rel="icon" href="data:image/svg+xml;utf8,${encodeURIComponent(iconVal)}">`;
             } else if (iconVal) {
-                const svgEmoji = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>${iconVal}</text></svg>`;
+                const svgEmoji = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${iconVal}</text></svg>`;
                 iconTag = `<link rel="icon" href="data:image/svg+xml;utf8,${encodeURIComponent(svgEmoji)}">`;
             }
 
-            // Meta tags set
             const metaTags = `<!-- PWA Essential Meta Tags -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="${themeColor}">
@@ -448,7 +426,6 @@ ${iconTag}
 <!-- Inline Manifest Data URL -->
 <link rel="manifest" href="${manifestDataUrl}">`;
 
-            // Complete template HTML
             const fullHtml = `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -478,25 +455,21 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
 </body>
 </html>`;
 
-            // Display in textareas
             outMetaTagsEl.value = metaTags;
             outManifestDataUrlEl.value = manifestDataUrl;
             outFullHtmlEl.value = fullHtml;
         }
 
-        // Copy mechanism
         function copyToClipboard(elementId, btn) {
             const el = document.getElementById(elementId);
             if (!el) return;
 
-            // Use standard selection copy fallback for iframe safety
             el.select();
             el.setSelectionRange(0, 99999);
             try {
                 document.execCommand('copy');
                 showToast("クリップボードにコピーしました！");
                 
-                // Feedback animation
                 const originalText = btn.innerHTML;
                 btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span>完了!</span>`;
                 setTimeout(() => {
@@ -507,7 +480,6 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
             }
         }
 
-        // UI Toast Message
         function showToast(msg) {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toastMsg');
