@@ -53,7 +53,7 @@
             background-color: #0f172a;
             color: #f8fafc;
         }
-        code, textarea, input.font-mono {
+        code, textarea, pre, input.font-mono {
             font-family: 'JetBrains Mono', monospace;
         }
         .preview-mask-circle { border-radius: 50%; }
@@ -64,43 +64,121 @@
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .print-only-block {
+            display: none;
+        }
+
+        /* Print styling for PDF export: clean text presentation with black text on white background */
+        @media print {
+            @page {
+                margin: 12mm;
+            }
+            body {
+                background: #ffffff !important;
+                color: #0f172a !important;
+                display: block !important;
+                min-height: auto !important;
+            }
+            header, footer, button, .no-print {
+                display: none !important;
+            }
+            main.print-container {
+                display: block !important;
+                width: 100% !important;
+                max-width: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            section {
+                display: block !important;
+                width: 100% !important;
+                margin-bottom: 16px !important;
+            }
+            .bg-dark-card {
+                background: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: none !important;
+                padding: 12px !important;
+                margin-bottom: 14px !important;
+                border-radius: 8px !important;
+                break-inside: auto !important;
+            }
+            h2, h3, label {
+                color: #0f172a !important;
+            }
+            input, select {
+                background: #f8fafc !important;
+                color: #0f172a !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+            textarea {
+                display: none !important;
+            }
+            .print-only-block {
+                display: block !important;
+                background: #f8fafc !important;
+                color: #0f172a !important;
+                border: 1px solid #cbd5e1 !important;
+                border-radius: 6px !important;
+                padding: 10px !important;
+                font-size: 10px !important;
+                line-height: 1.5 !important;
+                white-space: pre-wrap !important;
+                word-break: break-all !important;
+                overflow-wrap: break-word !important;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between antialiased selection:bg-brand-500 selection:text-white">
 
     <!-- Header Section -->
-    <header class="border-b border-dark-border bg-dark-card/80 backdrop-blur sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="p-2.5 bg-brand-600 rounded-xl shadow-lg shadow-brand-500/20 text-white">
-                    <i class="fa-solid fa-bolt text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-xl sm:text-2xl tracking-tight text-white flex items-center gap-2">
-                        PWA Data URL Generator
-                        <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">v3.0 Stable</span>
-                    </h1>
-                    <p class="text-xs text-slate-400">1ファイル完結型 PWA 生成 & 静的 Base64 埋め込みツール</p>
+    <header class="border-b border-dark-border bg-dark-card/85 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-brand-600 rounded-xl shadow-lg shadow-brand-500/20 text-white">
+                        <i class="fa-solid fa-bolt text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-xl sm:text-2xl tracking-tight text-white flex items-center gap-2">
+                            PWA Data URL Generator
+                            <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">v3.0 Complete</span>
+                        </h1>
+                        <p id="headerSubtitle" class="text-xs text-slate-400">自動圧縮リサイズ・画像タグ共有・PDF最適化対応</p>
+                    </div>
                 </div>
             </div>
             
-            <!-- Preset Switchers -->
-            <div class="flex items-center gap-2 flex-wrap">
-                <button onclick="loadPreset('todo')" class="text-xs font-semibold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg transition-all flex items-center gap-1.5">
-                    <i class="fa-solid fa-list-check text-brand-500"></i> TODO
-                </button>
-                <button onclick="loadPreset('memo')" class="text-xs font-semibold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg transition-all flex items-center gap-1.5">
-                    <i class="fa-solid fa-note-sticky text-amber-400"></i> メモ帳
-                </button>
-                <button onclick="loadPreset('tool')" class="text-xs font-semibold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg transition-all flex items-center gap-1.5">
-                    <i class="fa-solid fa-toolbox text-emerald-400"></i> ツール
-                </button>
+            <!-- Preset Switchers & Action Tools -->
+            <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto justify-end">
+                <div class="flex items-center gap-2 justify-center w-full sm:w-auto">
+                    <button onclick="loadPreset('todo')" class="flex-1 sm:flex-initial text-xs font-semibold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-list-check text-brand-500"></i> TODO
+                    </button>
+                    <button onclick="loadPreset('memo')" class="flex-1 sm:flex-initial text-xs font-semibold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-note-sticky text-amber-400"></i> メモ帳
+                    </button>
+                    <button onclick="loadPreset('tool')" class="flex-1 sm:flex-initial text-xs font-semibold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-lg transition-all flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-toolbox text-emerald-400"></i> ツール
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 justify-center w-full sm:w-auto">
+                    <button onclick="triggerWebShare()" title="Web Share APIで共有" class="flex-1 sm:flex-initial text-xs font-semibold px-3.5 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-1.5 active:scale-95">
+                        <i class="fa-solid fa-share-nodes"></i> 共有
+                    </button>
+                    <button onclick="triggerPdfPrint()" title="PDF保存" class="flex-1 sm:flex-initial text-xs font-semibold px-3.5 py-1.5 bg-brand-600 hover:bg-brand-500 text-white rounded-lg shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-1.5 active:scale-95">
+                        <i class="fa-solid fa-file-pdf"></i> PDF保存
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Main Content Grid -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 print-container">
         
         <!-- Left Column: Input Form & Config -->
         <section class="lg:col-span-5 space-y-6">
@@ -109,10 +187,9 @@
                     <h2 class="font-semibold text-lg text-white flex items-center gap-2">
                         <i class="fa-solid fa-sliders text-brand-500"></i> PWA & アプリ設定
                     </h2>
-                    <span class="text-xs text-slate-400">リアルタイム同期</span>
+                    <span class="text-xs text-slate-400 no-print">リアルタイム同期</span>
                 </div>
 
-                <!-- Basic Meta Info -->
                 <div class="space-y-4">
                     <div>
                         <label for="appTitle" class="block text-xs font-medium text-slate-300 mb-1">アプリ名 (App Title)</label>
@@ -123,7 +200,7 @@
                         <div>
                             <label for="themeColor" class="block text-xs font-medium text-slate-300 mb-1">テーマカラー</label>
                             <div class="flex items-center gap-2">
-                                <input type="color" id="themeColor" value="#6366f1" class="h-9 w-10 bg-transparent cursor-pointer rounded border border-dark-border">
+                                <input type="color" id="themeColor" value="#6366f1" class="h-9 w-10 bg-transparent cursor-pointer rounded border border-dark-border no-print">
                                 <input type="text" id="themeColorHex" value="#6366f1" class="w-full bg-dark-input border border-dark-border rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-brand-500 uppercase">
                             </div>
                         </div>
@@ -131,7 +208,7 @@
                         <div>
                             <label for="bgColor" class="block text-xs font-medium text-slate-300 mb-1">アイコン背景色</label>
                             <div class="flex items-center gap-2">
-                                <input type="color" id="bgColor" value="#6366f1" class="h-9 w-10 bg-transparent cursor-pointer rounded border border-dark-border">
+                                <input type="color" id="bgColor" value="#6366f1" class="h-9 w-10 bg-transparent cursor-pointer rounded border border-dark-border no-print">
                                 <input type="text" id="bgColorHex" value="#6366f1" class="w-full bg-dark-input border border-dark-border rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-brand-500 uppercase">
                             </div>
                         </div>
@@ -158,7 +235,7 @@
                     </div>
 
                     <!-- Icon Generator Mode Switcher -->
-                    <div class="space-y-3 pt-2 border-t border-dark-border">
+                    <div class="space-y-3 pt-2 border-t border-dark-border no-print">
                         <label class="block text-xs font-medium text-slate-300">アイコン設定方式</label>
                         <div class="grid grid-cols-2 gap-2">
                             <button type="button" id="tabEmoji" onclick="setIconMode('emoji')" class="py-2 text-xs font-semibold rounded-xl border transition-all bg-brand-600 text-white border-brand-500 shadow-md">
@@ -177,22 +254,28 @@
 
                         <!-- File Upload Area -->
                         <div id="fileInputArea" class="hidden space-y-2 pt-1">
-                            <label for="iconFile" class="block text-[11px] text-slate-400">画像ファイル (PNG / JPG / WebP)</label>
+                            <label for="iconFile" class="block text-[11px] text-slate-400">画像ファイル (自動512x512圧縮リサイズ)</label>
                             <input type="file" id="iconFile" accept="image/*" class="w-full bg-dark-input border border-dark-border rounded-xl px-3 py-1.5 text-xs text-slate-300 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-600 file:text-white hover:file:bg-brand-500 cursor-pointer">
                             <p id="transparentStatus" class="text-[11px] text-slate-400 italic"></p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Custom Manifest JSON Editor -->
+                <div class="pt-2 border-t border-dark-border space-y-2">
+                    <label for="externalImagePath" class="block text-xs font-medium text-slate-300">画像別置きモード用パス (例: <code class="text-amber-400">./icon.png</code>)</label>
+                    <input type="text" id="externalImagePath" value="./icon.png" class="w-full bg-dark-input border border-dark-border rounded-xl px-3 py-2 text-xs font-mono text-amber-400 focus:outline-none focus:border-brand-500">
+                    <p class="text-[11px] text-slate-500 no-print">※プレビュー画像を長押し(PCは右クリック)で保存し、サーバ等にアップする際の参照パスを指定できます。</p>
+                </div>
+
                 <div class="pt-2">
                     <div class="flex items-center justify-between mb-1">
                         <label for="jsonInput" class="block text-xs font-medium text-slate-300">manifest.json (詳細設定)</label>
-                        <button onclick="formatJson()" class="text-[10px] text-brand-500 hover:text-brand-400 font-semibold flex items-center gap-1">
+                        <button onclick="formatJson()" class="text-[10px] text-brand-500 hover:text-brand-400 font-semibold flex items-center gap-1 no-print">
                             <i class="fa-solid fa-wand-magic-sparkles"></i> 成形
                         </button>
                     </div>
                     <textarea id="jsonInput" rows="4" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-emerald-400 focus:outline-none focus:border-brand-500 transition-colors leading-relaxed"></textarea>
+                    <pre id="printJsonInput" class="print-only-block"></pre>
                 </div>
             </div>
         </section>
@@ -206,74 +289,37 @@
                     <h3 class="font-semibold text-sm text-white flex items-center gap-2">
                         <i class="fa-solid fa-mobile-screen text-brand-500"></i> OS実機マスクシミュレーター (プレビュー)
                     </h3>
-                    <span class="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700">実寸 512x512 Canvas</span>
+                    <span class="text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-full border border-slate-700 no-print">自動リサイズ 512x512</span>
                 </div>
 
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-6 py-4">
-                    <!-- Icon Preview Target -->
-                    <div class="relative group">
-                        <div id="previewContainer" class="w-32 h-32 preview-mask-circle overflow-hidden shadow-2xl transition-all duration-300 border-2 border-white/20 bg-slate-900 flex items-center justify-center">
+                    <div class="relative group text-center">
+                        <div id="previewContainer" class="w-32 h-32 preview-mask-circle overflow-hidden shadow-2xl transition-all duration-300 border-2 border-white/20 bg-slate-900 flex items-center justify-center cursor-pointer" title="スマホは長押し、PCは右クリックでリサイズ済み画像を保存できます">
                             <img id="previewImage" src="" alt="Live Preview" class="w-full h-full object-cover">
                         </div>
+                        <span class="text-[10px] text-slate-400 mt-1 block no-print">長押し/右クリックで画像保存可</span>
                     </div>
 
-                    <!-- Shape Switcher Buttons -->
-                    <div class="space-y-2 text-center sm:text-left">
+                    <div class="space-y-2 text-center sm:text-left no-print">
                         <p class="text-xs font-medium text-slate-400">マスク形状を選択:</p>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <button type="button" onclick="setPreviewMask('circle')" id="btnMaskCircle" class="px-3 py-2 text-xs font-semibold rounded-xl border bg-brand-600 text-white border-brand-500 shadow-md flex items-center gap-1.5 transition-all">
-                                <i class="fa-regular fa-circle"></i> 丸型 (Circle)
+                                <i class="fa-regular fa-circle"></i> 丸型
                             </button>
                             <button type="button" onclick="setPreviewMask('rounded')" id="btnMaskRounded" class="px-3 py-2 text-xs font-semibold rounded-xl border bg-dark-input text-slate-400 border-dark-border hover:border-slate-600 flex items-center gap-1.5 transition-all">
-                                <i class="fa-regular fa-square"></i> 角丸 (Squircle)
+                                <i class="fa-regular fa-square"></i> 角丸
                             </button>
                             <button type="button" onclick="setPreviewMask('square')" id="btnMaskSquare" class="px-3 py-2 text-xs font-semibold rounded-xl border bg-dark-input text-slate-400 border-dark-border hover:border-slate-600 flex items-center gap-1.5 transition-all">
-                                <i class="fa-solid fa-square"></i> 四角 (Square)
+                                <i class="fa-solid fa-square"></i> 四角
                             </button>
                         </div>
-                        <p class="text-[11px] text-slate-500 pt-1">※Android/iOS端末等における切り抜き見え方をシミュレートできます。</p>
+                        <p class="text-[11px] text-slate-500 pt-1">※プレビュー画像をそのまま保存して独立した画像ファイルとして使えます。</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Output 1: Meta Tags block -->
-            <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
-                <div class="flex items-center justify-between">
-                    <h3 class="font-semibold text-sm text-white flex items-center gap-2">
-                        <i class="fa-solid fa-tags text-brand-500"></i> PWA Header Meta & Manifest Tags
-                    </h3>
-                    <button onclick="copyToClipboard('outMetaTags', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 active:scale-95">
-                        <i class="fa-regular fa-copy"></i> <span>コピー</span>
-                    </button>
-                </div>
-                <textarea id="outMetaTags" readonly rows="4" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none resize-none leading-relaxed"></textarea>
-            </div>
-
-            <!-- Output 2: Manifest Data URL only -->
-            <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
-                <div class="flex items-center justify-between">
-                    <h3 class="font-semibold text-sm text-white flex items-center gap-2">
-                        <i class="fa-solid fa-link text-emerald-400"></i> Manifest Data URL (単体)
-                    </h3>
-                    <button onclick="copyToClipboard('outManifestDataUrl', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 active:scale-95">
-                        <i class="fa-regular fa-copy"></i> <span>コピー</span>
-                    </button>
-                </div>
-                <input type="text" id="outManifestDataUrl" readonly class="w-full bg-dark-input border border-dark-border rounded-xl px-3.5 py-2.5 text-xs font-mono text-emerald-400 focus:outline-none">
-            </div>
-
-            <!-- Output 3: Full Template HTML -->
-            <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
-                <div class="flex items-center justify-between">
-                    <h3 class="font-semibold text-sm text-white flex items-center gap-2">
-                        <i class="fa-solid fa-file-code text-cyan-400"></i> 完成1ファイル PWA テンプレート (HTML)
-                    </h3>
-                    <button onclick="copyToClipboard('outFullHtml', this)" class="text-xs bg-brand-600 hover:bg-brand-500 text-white font-medium px-3.5 py-1.5 rounded-lg shadow-lg shadow-brand-500/20 transition-all flex items-center gap-1.5 active:scale-95">
-                        <i class="fa-regular fa-copy"></i> <span>全コードコピー</span>
-                    </button>
-                </div>
-                <textarea id="outFullHtml" readonly rows="8" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-cyan-200 focus:outline-none resize-none leading-relaxed"></textarea>
-            </div>
+            <!-- Dynamic Output Container -->
+            <div id="dynamicOutputSection" class="space-y-6"></div>
 
         </section>
     </main>
@@ -282,14 +328,14 @@
     <canvas id="iconCanvas" width="512" height="512" class="hidden"></canvas>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-6 right-6 bg-brand-600 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none flex items-center gap-2 z-50">
+    <div id="toast" class="fixed bottom-6 right-6 bg-brand-600 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none flex items-center gap-2 z-50 no-print">
         <i class="fa-solid fa-circle-check text-base"></i>
         <span id="toastMsg">クリップボードにコピーしました！</span>
     </div>
 
-    <!-- Footer -->
-    <footer class="border-t border-dark-border py-4 text-center text-xs text-slate-500">
-        <p>© 2026 PWA Factory v3.0 - Clean Single File Web Tool</p>
+    <!-- Footer (Fixed with clear white text and distinct dark card background) -->
+    <footer class="border-t border-dark-border bg-dark-card py-4 text-center text-xs text-white">
+        <p>© 2026 PWA Factory v3.0 Complete - Clean Single File Web Tool</p>
     </footer>
 
     <!-- Application Script -->
@@ -297,6 +343,7 @@
         let currentIconMode = 'emoji'; 
         let uploadedImageObj = null;
         let isImageTransparent = false;
+        let currentCompressedDataUrl = '';
 
         const presets = {
             todo: { title: "マイTODOアプリ", themeColor: "#6366f1", bgColor: "#6366f1", display: "standalone", orientation: "portrait", emoji: "⚡" },
@@ -315,13 +362,13 @@
         const iconFileEl = document.getElementById('iconFile');
         const jsonInputEl = document.getElementById('jsonInput');
         const transparentStatusEl = document.getElementById('transparentStatus');
+        const externalImagePathEl = document.getElementById('externalImagePath');
 
         const previewContainer = document.getElementById('previewContainer');
         const previewImage = document.getElementById('previewImage');
-
-        const outMetaTagsEl = document.getElementById('outMetaTags');
-        const outManifestDataUrlEl = document.getElementById('outManifestDataUrl');
-        const outFullHtmlEl = document.getElementById('outFullHtml');
+        const dynamicOutputSection = document.getElementById('dynamicOutputSection');
+        const printJsonInputEl = document.getElementById('printJsonInput');
+        const headerSubtitle = document.getElementById('headerSubtitle');
 
         const iconCanvas = document.getElementById('iconCanvas');
         const ctx = iconCanvas.getContext('2d');
@@ -343,11 +390,17 @@
                 tabFile.className = "py-2 text-xs font-semibold rounded-xl border transition-all bg-dark-input text-slate-400 border-dark-border hover:border-slate-600";
                 emojiArea.classList.remove('hidden');
                 fileArea.classList.add('hidden');
+
+                // Emoji mode: make header subtitle crisp white
+                headerSubtitle.className = "text-xs text-white font-medium";
             } else {
                 tabFile.className = "py-2 text-xs font-semibold rounded-xl border transition-all bg-brand-600 text-white border-brand-500 shadow-md";
                 tabEmoji.className = "py-2 text-xs font-semibold rounded-xl border transition-all bg-dark-input text-slate-400 border-dark-border hover:border-slate-600";
                 fileArea.classList.remove('hidden');
                 emojiArea.classList.add('hidden');
+
+                // File mode: normal slate-400
+                headerSubtitle.className = "text-xs text-slate-400";
             }
             generateAll();
         }
@@ -382,8 +435,13 @@
             bgColorEl.addEventListener('input', (e) => { bgColorHexEl.value = e.target.value; generateAll(); });
             bgColorHexEl.addEventListener('input', (e) => { bgColorEl.value = e.target.value; generateAll(); });
 
-            [appTitleEl, displayModeEl, orientationEl, iconEmojiEl].forEach(el => {
+            [appTitleEl, displayModeEl, orientationEl, iconEmojiEl, externalImagePathEl].forEach(el => {
                 el.addEventListener('input', generateAll);
+            });
+
+            jsonInputEl.addEventListener('input', () => {
+                const printEl = document.getElementById('printJsonInput');
+                if (printEl) printEl.textContent = jsonInputEl.value;
             });
 
             iconFileEl.addEventListener('change', (e) => {
@@ -424,9 +482,9 @@
             }
 
             if (isImageTransparent) {
-                transparentStatusEl.innerHTML = `<span class="text-emerald-400"><i class="fa-solid fa-circle-check"></i> 透過領域を検出：背景色と自動合成します</span>`;
+                transparentStatusEl.innerHTML = `<span class="text-emerald-400"><i class="fa-solid fa-circle-check"></i> 透過領域を検出：背景色と自動合成・圧縮します</span>`;
             } else {
-                transparentStatusEl.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-image"></i> 通常画像を検出：背景処理を行わず最適表示します</span>`;
+                transparentStatusEl.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-image"></i> 通常画像を検出：512x512に自動圧縮・最適化します</span>`;
             }
         }
 
@@ -479,7 +537,7 @@
                     }
                 }
             }
-            return iconCanvas.toDataURL('image/png');
+            return iconCanvas.toDataURL('image/png', 0.9);
         }
 
         async function generateAll() {
@@ -488,11 +546,10 @@
             const iconBgColor = bgColorHexEl.value || "#6366f1";
             const display = displayModeEl.value;
             const orientation = orientationEl.value;
+            const externalPath = externalImagePathEl.value || "./icon.png";
 
-            const iconPngDataUrl = await generatePngDataUrl();
-
-            // Update Live Preview Image
-            previewImage.src = iconPngDataUrl;
+            currentCompressedDataUrl = await generatePngDataUrl();
+            previewImage.src = currentCompressedDataUrl;
 
             let manifestObj = {
                 name: title,
@@ -504,7 +561,7 @@
                 orientation: orientation,
                 icons: [
                     {
-                        src: iconPngDataUrl,
+                        src: currentIconMode === 'emoji' ? currentCompressedDataUrl : externalPath,
                         sizes: "512x512",
                         type: "image/png",
                         purpose: "any maskable"
@@ -512,21 +569,56 @@
                 ]
             };
 
-            jsonInputEl.value = JSON.stringify(manifestObj, null, 2);
+            const manifestJsonStr = JSON.stringify(manifestObj, null, 2);
+            jsonInputEl.value = manifestJsonStr;
+            if (printJsonInputEl) printJsonInputEl.textContent = manifestJsonStr;
 
             const manifestDataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(manifestObj))}`;
 
-            const metaTags = `<!-- PWA Essential Meta Tags -->
+            if (currentIconMode === 'emoji') {
+                const metaTags = `<!-- PWA Essential Meta Tags (Compressed Base64 Version) -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="${themeColor}">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="${title}">
-<link rel="icon" href="${iconPngDataUrl}">
-<link rel="apple-touch-icon" href="${iconPngDataUrl}">
+<link rel="icon" href="${currentCompressedDataUrl}">
+<link rel="apple-touch-icon" href="${currentCompressedDataUrl}">
 <link rel="manifest" href="${manifestDataUrl}">`;
 
-            const fullHtml = `<!DOCTYPE html>
+                const externalManifestObj = {
+                    name: title,
+                    short_name: title.length > 10 ? title.substring(0, 10) + "..." : title,
+                    start_url: ".",
+                    display: display,
+                    background_color: iconBgColor,
+                    theme_color: themeColor,
+                    orientation: orientation,
+                    icons: [
+                        {
+                            src: externalPath,
+                            sizes: "512x512",
+                            type: "image/png",
+                            purpose: "any maskable"
+                        }
+                    ]
+                };
+                const externalManifestStr = JSON.stringify(externalManifestObj, null, 2);
+
+                const externalFileHtmlSnippet = `<!-- 画像別置きモード用 ヘッダー設定 -->
+<!-- （※長押し保存した画像を ${externalPath} として同じ階層に配置してください） -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="${themeColor}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="${title}">
+<link rel="icon" href="${externalPath}">
+<link rel="apple-touch-icon" href="${externalPath}">
+<!-- manifest.json を別ファイルにする場合のJSON内容: -->
+<!-- 
+${externalManifestStr}
+-->`;
+
+                const fullHtml = `<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -544,10 +636,10 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
 <body class="min-h-screen flex flex-col justify-center items-center p-4">
     <div class="text-center space-y-4 max-w-md w-full bg-slate-800/80 border border-slate-700 p-6 rounded-2xl shadow-2xl backdrop-blur">
         <div class="flex justify-center mb-2">
-            <img src="${iconPngDataUrl}" alt="App Icon" class="w-20 h-20 rounded-2xl shadow-lg border border-slate-600">
+            <img src="${currentCompressedDataUrl}" alt="App Icon" class="w-20 h-20 rounded-2xl shadow-lg border border-slate-600">
         </div>
         <h1 class="text-2xl font-bold text-white">${title}</h1>
-        <p class="text-xs text-slate-400">安定版 PWA アプリケーション稼働中！</p>
+        <p class="text-xs text-slate-400">PWA アプリケーション稼働中！</p>
         <div class="pt-4 border-t border-slate-700">
             <button onclick="alert('PWA動作中！')" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 px-4 rounded-xl transition-all shadow-lg active:scale-95">
                 アクションを実行
@@ -557,19 +649,273 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
 </body>
 </html>`;
 
-            outMetaTagsEl.value = metaTags;
-            outManifestDataUrlEl.value = manifestDataUrl;
-            outFullHtmlEl.value = fullHtml;
+                dynamicOutputSection.innerHTML = `
+                    <!-- Output 1: Meta Tags block -->
+                    <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-tags text-brand-500"></i>
+                                <span>
+                                    PWA Header Meta & Manifest Tags
+                                    <span class="block text-slate-400 font-normal text-xs mt-0.5">(圧縮Base64埋め込み版)</span>
+                                </span>
+                            </h3>
+                            <button onclick="copyToClipboard('outMetaTags', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center gap-1 active:scale-95 no-print w-16 sm:w-20 shrink-0">
+                                <i class="fa-regular fa-copy text-base"></i>
+                                <span class="text-[10px] leading-none">コピー</span>
+                            </button>
+                        </div>
+                        <textarea id="outMetaTags" readonly rows="4" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-slate-300 focus:outline-none resize-none leading-relaxed">${metaTags}</textarea>
+                        <pre id="printOutMetaTags" class="print-only-block">${metaTags}</pre>
+                    </div>
+
+                    <!-- Output 2: Separate File URL PWA Template -->
+                    <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-file-image text-amber-400"></i>
+                                <span>
+                                    画像別置きモード用 コード
+                                    <span class="block text-slate-400 font-normal text-xs mt-0.5">(保存した画像を一緒にアップ用)</span>
+                                </span>
+                            </h3>
+                            <button onclick="copyToClipboard('outExternalFileHtml', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center gap-1 active:scale-95 no-print w-16 sm:w-20 shrink-0">
+                                <i class="fa-regular fa-copy text-base"></i>
+                                <span class="text-[10px] leading-none">コピー</span>
+                            </button>
+                        </div>
+                        <textarea id="outExternalFileHtml" readonly rows="4" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-amber-300 focus:outline-none resize-none leading-relaxed">${externalFileHtmlSnippet}</textarea>
+                        <pre id="printOutExternalFileHtml" class="print-only-block">${externalFileHtmlSnippet}</pre>
+                        <p class="text-[11px] text-slate-500 no-print">※プレビュー画像を長押し/右クリックで保存し、指定パス（例: icon.png）で同階層にアップロードする場合に最適です。</p>
+                    </div>
+
+                    <!-- Output 3: Full Template HTML -->
+                    <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-file-code text-cyan-400"></i>
+                                <span>
+                                    完成1ファイル PWA テンプレート
+                                    <span class="block text-slate-400 font-normal text-xs mt-0.5">(圧縮Base64内蔵 HTML)</span>
+                                </span>
+                            </h3>
+                            <button onclick="copyToClipboard('outFullHtml', this)" class="text-xs bg-brand-600 hover:bg-brand-500 text-white font-medium px-3.5 py-2 rounded-xl shadow-lg shadow-brand-500/20 transition-all flex flex-col items-center justify-center gap-1 active:scale-95 no-print w-20 sm:w-24 shrink-0">
+                                <i class="fa-regular fa-copy text-base"></i>
+                                <span class="text-[10px] leading-none">全コードコピー</span>
+                            </button>
+                        </div>
+                        <textarea id="outFullHtml" readonly rows="8" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-cyan-200 focus:outline-none resize-none leading-relaxed">${fullHtml}</textarea>
+                        <pre id="printOutFullHtml" class="print-only-block">${fullHtml}</pre>
+                    </div>
+                `;
+
+            } else {
+                const externalFileHtmlSnippet = `<!-- 画像別置きモード用 ヘッダー設定 -->
+<!-- （※ダウンロードした icon.png を同じ階層に配置してください） -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="${themeColor}">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="${title}">
+<link rel="icon" href="${externalPath}">
+<link rel="apple-touch-icon" href="${externalPath}">
+<link rel="manifest" href="./manifest.json">`;
+
+                const fileManifestStr = JSON.stringify({
+                    name: title,
+                    short_name: title.length > 10 ? title.substring(0, 10) + "..." : title,
+                    start_url: ".",
+                    display: display,
+                    background_color: iconBgColor,
+                    theme_color: themeColor,
+                    orientation: orientation,
+                    icons: [
+                        {
+                            src: externalPath,
+                            sizes: "512x512",
+                            type: "image/png",
+                            purpose: "any maskable"
+                        }
+                    ]
+                }, null, 2);
+
+                dynamicOutputSection.innerHTML = `
+                    <!-- File Mode Notice Card -->
+                    <div class="bg-dark-card border border-dark-border rounded-2xl p-5 shadow-xl space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-emerald-600 text-white rounded-xl">
+                                <i class="fa-solid fa-file-arrow-down text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-sm text-white">画像ファイルモード（軽量・別置き運用）</h3>
+                                <p class="text-xs text-slate-300">画像データが大きいため、Base64埋め込みを排除し、アイコン画像とHTMLコードの個別ダウンロードに最適化されています。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action 1: Download Optimized Icon (icon.png) -->
+                    <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                                <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-image text-emerald-400"></i> リサイズ済みアイコン画像
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-0.5">512x512pxに自動圧縮された正方形アイコン画像です。</p>
+                            </div>
+                            <button onclick="downloadIconPng()" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 active:scale-95 shrink-0">
+                                <i class="fa-solid fa-download"></i> <span>icon.png をダウンロード</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action 2: Download HTML Code Snippet -->
+                    <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-code text-amber-400"></i>
+                                <span>
+                                    HTMLヘッダータグ設定
+                                    <span class="block text-slate-400 font-normal text-xs mt-0.5">(index.html用スニペット)</span>
+                                </span>
+                            </h3>
+                            <button onclick="copyToClipboard('outFileHtmlSnippet', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center gap-1 active:scale-95 no-print w-16 sm:w-20 shrink-0">
+                                <i class="fa-regular fa-copy text-base"></i>
+                                <span class="text-[10px] leading-none">コピー</span>
+                            </button>
+                        </div>
+                        <textarea id="outFileHtmlSnippet" readonly rows="5" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-amber-300 focus:outline-none resize-none leading-relaxed">${externalFileHtmlSnippet}</textarea>
+                        <pre id="printOutFileHtmlSnippet" class="print-only-block">${externalFileHtmlSnippet}</pre>
+                    </div>
+
+                    <!-- Action 3: Manifest.json Download/Copy -->
+                    <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-file-lines text-cyan-400"></i>
+                                <span>
+                                    manifest.json
+                                    <span class="block text-slate-400 font-normal text-xs mt-0.5">(同階層に配置用)</span>
+                                </span>
+                            </h3>
+                            <button onclick="copyToClipboard('outFileManifest', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center gap-1 active:scale-95 no-print w-16 sm:w-20 shrink-0">
+                                <i class="fa-regular fa-copy text-base"></i>
+                                <span class="text-[10px] leading-none">コピー</span>
+                            </button>
+                        </div>
+                        <textarea id="outFileManifest" readonly rows="5" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-cyan-200 focus:outline-none resize-none leading-relaxed">${fileManifestStr}</textarea>
+                        <pre id="printOutFileManifest" class="print-only-block">${fileManifestStr}</pre>
+                    </div>
+                `;
+            }
+        }
+
+        function downloadIconPng() {
+            const link = document.createElement('a');
+            link.download = 'icon.png';
+            link.href = currentCompressedDataUrl;
+            link.click();
+            showToast("icon.png をダウンロードしました！");
         }
 
         function formatJson() {
             try {
                 const parsed = JSON.parse(jsonInputEl.value);
-                jsonInputEl.value = JSON.stringify(parsed, null, 2);
+                const formatted = JSON.stringify(parsed, null, 2);
+                jsonInputEl.value = formatted;
+                const printEl = document.getElementById('printJsonInput');
+                if (printEl) printEl.textContent = formatted;
                 showToast("JSONを整形しました！");
             } catch (e) {
                 showToast("無効なJSONフォーマットです");
             }
+        }
+
+        function getFormattedTimestamp() {
+            const now = new Date();
+            const y = now.getFullYear();
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            const h = String(now.getHours()).padStart(2, '0');
+            const min = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            return `${y}/${m}/${d} ${h}:${min}:${s}`;
+        }
+
+        async function triggerWebShare() {
+            const title = appTitleEl.value || "マイアプリ";
+            const timestamp = getFormattedTimestamp();
+            
+            let shareText = "";
+            if (currentIconMode === 'emoji') {
+                const extEl = document.getElementById('outExternalFileHtml');
+                shareText = `【PWA生成データ】\n作成日時: ${timestamp}\nアプリ名: ${title}\n\n${extEl ? extEl.value : ''}`;
+            } else {
+                const snippetEl = document.getElementById('outFileHtmlSnippet');
+                shareText = `【PWA生成データ（画像別置きモード）】\n作成日時: ${timestamp}\nアプリ名: ${title}\n\n${snippetEl ? snippetEl.value : ''}\n\n※icon.pngを同じ階層に配置してください。`;
+            }
+
+            if (navigator.share) {
+                try {
+                    let shareFiles = [];
+                    if (currentCompressedDataUrl) {
+                        const res = await fetch(currentCompressedDataUrl);
+                        const blob = await res.blob();
+                        const file = new File([blob], "icon.png", { type: "image/png" });
+                        shareFiles.push(file);
+                    }
+
+                    if (shareFiles.length > 0 && navigator.canShare && navigator.canShare({ files: shareFiles })) {
+                        await navigator.share({
+                            title: title,
+                            text: shareText,
+                            files: shareFiles
+                        });
+                        showToast("Web共有に成功しました！");
+                    } else {
+                        await navigator.share({
+                            title: title,
+                            text: shareText
+                        });
+                        showToast("テキストのWeb共有に成功しました！");
+                    }
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        showToast("共有がキャンセルまたは失敗しました");
+                    }
+                }
+            } else {
+                navigator.clipboard.writeText(shareText);
+                showToast("Web Share非対応環境のため設定テキストをコピーしました");
+            }
+        }
+
+        function triggerPdfPrint() {
+            const printJson = document.getElementById('printJsonInput');
+            if (printJson) printJson.textContent = jsonInputEl.value;
+
+            if (currentIconMode === 'emoji') {
+                const meta = document.getElementById('outMetaTags');
+                const pMeta = document.getElementById('printOutMetaTags');
+                if (meta && pMeta) pMeta.textContent = meta.value;
+
+                const ext = document.getElementById('outExternalFileHtml');
+                const pExt = document.getElementById('printOutExternalFileHtml');
+                if (ext && pExt) pExt.textContent = ext.value;
+
+                const full = document.getElementById('outFullHtml');
+                const pFull = document.getElementById('printOutFullHtml');
+                if (full && pFull) pFull.textContent = full.value;
+            } else {
+                const snippet = document.getElementById('outFileHtmlSnippet');
+                const pSnippet = document.getElementById('printOutFileHtmlSnippet');
+                if (snippet && pSnippet) pSnippet.textContent = snippet.value;
+
+                const manif = document.getElementById('outFileManifest');
+                const pManif = document.getElementById('printOutFileManifest');
+                if (manif && pManif) pManif.textContent = manif.value;
+            }
+
+            window.print();
         }
 
         function copyToClipboard(elementId, btn) {
@@ -583,7 +929,7 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
                 showToast("クリップボードにコピーしました！");
                 
                 const originalText = btn.innerHTML;
-                btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span>完了!</span>`;
+                btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i><span class="text-[10px] leading-none mt-1">完了!</span>`;
                 setTimeout(() => { btn.innerHTML = originalText; }, 1500);
             } catch (err) {
                 showToast("コピーに失敗しました");
