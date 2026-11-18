@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PWA Data URL & Meta Tag Generator v3.0</title>
+    <title>PWA Data URL Generator V31</title>
     <!-- PWA Essential Meta Tags -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#6366f1">
@@ -144,9 +144,9 @@
                     <div>
                         <h1 class="font-bold text-xl sm:text-2xl tracking-tight text-white flex items-center gap-2">
                             PWA Data URL Generator
-                            <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">v3.0 Complete</span>
+                            <span class="text-xs bg-brand-500/20 text-brand-500 border border-brand-500/30 font-semibold px-2.5 py-0.5 rounded-full">V31</span>
                         </h1>
-                        <p id="headerSubtitle" class="text-xs text-slate-400">自動圧縮リサイズ・画像タグ共有・PDF最適化対応</p>
+                        <p id="headerSubtitle" class="text-xs text-white font-medium">自動圧縮リサイズ・画像タグ共有・PDF最適化対応</p>
                     </div>
                 </div>
             </div>
@@ -333,9 +333,9 @@
         <span id="toastMsg">クリップボードにコピーしました！</span>
     </div>
 
-    <!-- Footer (Fixed with clear white text and distinct dark card background) -->
+    <!-- Footer -->
     <footer class="border-t border-dark-border bg-dark-card py-4 text-center text-xs text-white">
-        <p>© 2026 PWA Factory v3.0 Complete - Clean Single File Web Tool</p>
+        <p>© 2026 PWA Factory V31 - Clean Single File Web Tool</p>
     </footer>
 
     <!-- Application Script -->
@@ -390,16 +390,12 @@
                 tabFile.className = "py-2 text-xs font-semibold rounded-xl border transition-all bg-dark-input text-slate-400 border-dark-border hover:border-slate-600";
                 emojiArea.classList.remove('hidden');
                 fileArea.classList.add('hidden');
-
-                // Emoji mode: make header subtitle crisp white
                 headerSubtitle.className = "text-xs text-white font-medium";
             } else {
                 tabFile.className = "py-2 text-xs font-semibold rounded-xl border transition-all bg-brand-600 text-white border-brand-500 shadow-md";
                 tabEmoji.className = "py-2 text-xs font-semibold rounded-xl border transition-all bg-dark-input text-slate-400 border-dark-border hover:border-slate-600";
                 fileArea.classList.remove('hidden');
                 emojiArea.classList.add('hidden');
-
-                // File mode: normal slate-400
                 headerSubtitle.className = "text-xs text-slate-400";
             }
             generateAll();
@@ -551,7 +547,8 @@
             currentCompressedDataUrl = await generatePngDataUrl();
             previewImage.src = currentCompressedDataUrl;
 
-            let manifestObj = {
+            // 1. 絵文字モード用マニフェストオブジェクト
+            let emojiManifestObj = {
                 name: title,
                 short_name: title.length > 10 ? title.substring(0, 10) + "..." : title,
                 start_url: ".",
@@ -561,7 +558,7 @@
                 orientation: orientation,
                 icons: [
                     {
-                        src: currentIconMode === 'emoji' ? currentCompressedDataUrl : externalPath,
+                        src: currentCompressedDataUrl,
                         sizes: "512x512",
                         type: "image/png",
                         purpose: "any maskable"
@@ -569,11 +566,32 @@
                 ]
             };
 
-            const manifestJsonStr = JSON.stringify(manifestObj, null, 2);
+            // 2. 画像ファイルモード用マニフェストオブジェクト
+            let fileManifestObj = {
+                name: title,
+                short_name: title.length > 10 ? title.substring(0, 10) + "..." : title,
+                start_url: ".",
+                display: display,
+                background_color: iconBgColor,
+                theme_color: themeColor,
+                orientation: orientation,
+                icons: [
+                    {
+                        src: externalPath,
+                        sizes: "512x512",
+                        type: "image/png",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+
+            const activeManifestObj = currentIconMode === 'emoji' ? emojiManifestObj : fileManifestObj;
+            const manifestJsonStr = JSON.stringify(activeManifestObj, null, 2);
             jsonInputEl.value = manifestJsonStr;
             if (printJsonInputEl) printJsonInputEl.textContent = manifestJsonStr;
 
-            const manifestDataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(JSON.stringify(manifestObj))}`;
+            const emojiManifestDataUrl = `data:application/manifest+json;charset=utf-8,${encodeURIComponent(JSON.stringify(emojiManifestObj))}`;
+            const fileManifestDataUrl = `data:application/manifest+json;charset=utf-8,${encodeURIComponent(JSON.stringify(fileManifestObj))}`;
 
             if (currentIconMode === 'emoji') {
                 const metaTags = `<!-- PWA Essential Meta Tags (Compressed Base64 Version) -->
@@ -584,9 +602,9 @@
 <meta name="apple-mobile-web-app-title" content="${title}">
 <link rel="icon" href="${currentCompressedDataUrl}">
 <link rel="apple-touch-icon" href="${currentCompressedDataUrl}">
-<link rel="manifest" href="${manifestDataUrl}">`;
+<link rel="manifest" href="${emojiManifestDataUrl}">`;
 
-                const externalManifestObj = {
+                const externalManifestObjForEmoji = {
                     name: title,
                     short_name: title.length > 10 ? title.substring(0, 10) + "..." : title,
                     start_url: ".",
@@ -603,9 +621,9 @@
                         }
                     ]
                 };
-                const externalManifestStr = JSON.stringify(externalManifestObj, null, 2);
+                const externalManifestDataUrlForEmoji = `data:application/manifest+json;charset=utf-8,${encodeURIComponent(JSON.stringify(externalManifestObjForEmoji))}`;
 
-                const externalFileHtmlSnippet = `<!-- 画像別置きモード用 ヘッダー設定 -->
+                const externalFileHtmlSnippet = `<!-- 画像別置きモード用 ヘッダー設定（ManifestデータURI内包版） -->
 <!-- （※長押し保存した画像を ${externalPath} として同じ階層に配置してください） -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="${themeColor}">
@@ -613,10 +631,7 @@
 <meta name="apple-mobile-web-app-title" content="${title}">
 <link rel="icon" href="${externalPath}">
 <link rel="apple-touch-icon" href="${externalPath}">
-<!-- manifest.json を別ファイルにする場合のJSON内容: -->
-<!-- 
-${externalManifestStr}
--->`;
+<link rel="manifest" href="${externalManifestDataUrlForEmoji}">`;
 
                 const fullHtml = `<!DOCTYPE html>
 <html lang="ja">
@@ -675,7 +690,7 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
                             <h3 class="font-semibold text-sm text-white flex items-center gap-2">
                                 <i class="fa-solid fa-file-image text-amber-400"></i>
                                 <span>
-                                    画像別置きモード用 コード
+                                    画像別置きモード用 コード (ManifestデータURI内包)
                                     <span class="block text-slate-400 font-normal text-xs mt-0.5">(保存した画像を一緒にアップ用)</span>
                                 </span>
                             </h3>
@@ -710,8 +725,8 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
                 `;
 
             } else {
-                const externalFileHtmlSnippet = `<!-- 画像別置きモード用 ヘッダー設定 -->
-<!-- （※ダウンロードした icon.png を同じ階層に配置してください） -->
+                const externalFileHtmlSnippet = `<!-- 画像別置きモード用 ヘッダー設定（ManifestデータURI内包版） -->
+<!-- （※ダウンロードした icon.png を ${externalPath} として同じ階層に配置してください） -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="${themeColor}">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -719,25 +734,9 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
 <meta name="apple-mobile-web-app-title" content="${title}">
 <link rel="icon" href="${externalPath}">
 <link rel="apple-touch-icon" href="${externalPath}">
-<link rel="manifest" href="./manifest.json">`;
+<link rel="manifest" href="${fileManifestDataUrl}">`;
 
-                const fileManifestStr = JSON.stringify({
-                    name: title,
-                    short_name: title.length > 10 ? title.substring(0, 10) + "..." : title,
-                    start_url: ".",
-                    display: display,
-                    background_color: iconBgColor,
-                    theme_color: themeColor,
-                    orientation: orientation,
-                    icons: [
-                        {
-                            src: externalPath,
-                            sizes: "512x512",
-                            type: "image/png",
-                            purpose: "any maskable"
-                        }
-                    ]
-                }, null, 2);
+                const fileManifestStr = JSON.stringify(fileManifestObj, null, 2);
 
                 dynamicOutputSection.innerHTML = `
                     <!-- File Mode Notice Card -->
@@ -747,8 +746,8 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
                                 <i class="fa-solid fa-file-arrow-down text-lg"></i>
                             </div>
                             <div>
-                                <h3 class="font-semibold text-sm text-white">画像ファイルモード（軽量・別置き運用）</h3>
-                                <p class="text-xs text-slate-300">画像データが大きいため、Base64埋め込みを排除し、アイコン画像とHTMLコードの個別ダウンロードに最適化されています。</p>
+                                <h3 class="font-semibold text-sm text-white">画像ファイルモード（アイコン別置き ＋ ManifestデータURI内包）</h3>
+                                <p class="text-xs text-slate-300">重い画像データは別ファイル（icon.png / 512x512）にしつつ、設定JSONはData URIとしてHTMLヘッダー内にスッキリ内包します。</p>
                             </div>
                         </div>
                     </div>
@@ -758,7 +757,7 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
                                 <h3 class="font-semibold text-sm text-white flex items-center gap-2">
-                                    <i class="fa-solid fa-image text-emerald-400"></i> リサイズ済みアイコン画像
+                                    <i class="fa-solid fa-image text-emerald-400"></i> リサイズ済みアイコン画像 (512x512)
                                 </h3>
                                 <p class="text-xs text-slate-400 mt-0.5">512x512pxに自動圧縮された正方形アイコン画像です。</p>
                             </div>
@@ -774,7 +773,7 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
                             <h3 class="font-semibold text-sm text-white flex items-center gap-2">
                                 <i class="fa-solid fa-code text-amber-400"></i>
                                 <span>
-                                    HTMLヘッダータグ設定
+                                    HTMLヘッダータグ設定 (Manifest Data URI内包)
                                     <span class="block text-slate-400 font-normal text-xs mt-0.5">(index.html用スニペット)</span>
                                 </span>
                             </h3>
@@ -783,18 +782,18 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
                                 <span class="text-[10px] leading-none">コピー</span>
                             </button>
                         </div>
-                        <textarea id="outFileHtmlSnippet" readonly rows="5" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-amber-300 focus:outline-none resize-none leading-relaxed">${externalFileHtmlSnippet}</textarea>
+                        <textarea id="outFileHtmlSnippet" readonly rows="6" class="w-full bg-dark-input border border-dark-border rounded-xl p-3 text-xs font-mono text-amber-300 focus:outline-none resize-none leading-relaxed">${externalFileHtmlSnippet}</textarea>
                         <pre id="printOutFileHtmlSnippet" class="print-only-block">${externalFileHtmlSnippet}</pre>
                     </div>
 
-                    <!-- Action 3: Manifest.json Download/Copy -->
+                    <!-- Action 3: Manifest.json Standalone Reference -->
                     <div class="bg-dark-card border border-dark-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-3">
                         <div class="flex items-center justify-between gap-3">
                             <h3 class="font-semibold text-sm text-white flex items-center gap-2">
                                 <i class="fa-solid fa-file-lines text-cyan-400"></i>
                                 <span>
-                                    manifest.json
-                                    <span class="block text-slate-400 font-normal text-xs mt-0.5">(同階層に配置用)</span>
+                                    manifest.json (構造確認用)
+                                    <span class="block text-slate-400 font-normal text-xs mt-0.5">(内部でデータURI化されているJSON)</span>
                                 </span>
                             </h3>
                             <button onclick="copyToClipboard('outFileManifest', this)" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-2 rounded-xl transition-all flex flex-col items-center justify-center gap-1 active:scale-95 no-print w-16 sm:w-20 shrink-0">
@@ -851,7 +850,7 @@ ${metaTags.split('\n').map(line => '    ' + line).join('\n')}
                 shareText = `【PWA生成データ】\n作成日時: ${timestamp}\nアプリ名: ${title}\n\n${extEl ? extEl.value : ''}`;
             } else {
                 const snippetEl = document.getElementById('outFileHtmlSnippet');
-                shareText = `【PWA生成データ（画像別置きモード）】\n作成日時: ${timestamp}\nアプリ名: ${title}\n\n${snippetEl ? snippetEl.value : ''}\n\n※icon.pngを同じ階層に配置してください。`;
+                shareText = `【PWA生成データ（画像別置き・ManifestデータURI版）】\n作成日時: ${timestamp}\nアプリ名: ${title}\n\n${snippetEl ? snippetEl.value : ''}\n\n※icon.pngを同じ階層に配置してください。`;
             }
 
             if (navigator.share) {
